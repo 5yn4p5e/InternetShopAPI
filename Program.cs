@@ -1,5 +1,6 @@
 using InternetShop.Data;
 using InternetShop.InternetShopModels;
+using InternetShop.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Text.Json.Serialization;
 
@@ -30,6 +31,33 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 x.JsonSerializerOptions.ReferenceHandler =
 ReferenceHandler.IgnoreCycles);
 
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
+});
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.Name = "ISCookie";
+    options.LoginPath = "/";
+    options.AccessDeniedPath = "/";
+    options.LogoutPath = "/";
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = 401;
+        return Task.CompletedTask;
+    };
+    //  401      
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = 401;
+        return Task.CompletedTask;
+    };
+});
+
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -37,6 +65,7 @@ using (var scope = app.Services.CreateScope())
     var internetShopContext =
     scope.ServiceProvider.GetRequiredService<InternetShopContext>();
     await DbInitializer.Initialize(internetShopContext);
+    await IdentitySeed.CreateUserRoles(scope.ServiceProvider);
 }
 
 // Configure the HTTP request pipeline.

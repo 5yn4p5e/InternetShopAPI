@@ -7,6 +7,8 @@ using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using static System.Net.Mime.MediaTypeNames;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -237,6 +239,7 @@ namespace InternetShop.Controllers
 
         // DELETE api/<ProductController>/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             if (!ModelState.IsValid)

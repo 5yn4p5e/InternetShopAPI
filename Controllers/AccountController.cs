@@ -33,6 +33,8 @@ namespace InternetShop.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    // Установка роли User
+                    await _userManager.AddToRoleAsync(user, "user");
                     // Установка куки
                     await _signInManager.SignInAsync(user, false);
                     return Ok(new { message = "Добавлен новый пользователь: " + user.UserName });
@@ -72,7 +74,10 @@ namespace InternetShop.Controllers
                 await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
                 if (result.Succeeded)
                 {
-                    return Ok(new { message = "Выполнен вход", userName = model.Email });
+                    var user = await _userManager.FindByEmailAsync(model.Email);
+                    IList<string>? roles = await _userManager.GetRolesAsync(user);
+                    string? userRole = roles.FirstOrDefault();
+                    return Ok(new { message = "Выполнен вход", userName = model.Email, userRole });
                 }
                 else
                 {
@@ -117,9 +122,9 @@ namespace InternetShop.Controllers
             {
                 return Unauthorized(new { message = "Вы Гость. Пожалуйста, выполните вход" });
             }
-            return Ok(new { message = "Сессия активна", userName = usr.UserName });
-
-
+            IList<string> roles = await _userManager.GetRolesAsync(usr);
+            string? userRole = roles.FirstOrDefault();
+            return Ok(new { message = "Сессия активна", userName = usr.UserName, userRole });
         }
 
         private Task<User> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
