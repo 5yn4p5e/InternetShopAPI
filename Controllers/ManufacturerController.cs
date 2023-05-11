@@ -9,6 +9,9 @@ using System.Data;
 
 namespace InternetShop.Controllers
 {
+    /// <summary>
+    /// Контроллер для взаимодействия с производителями
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors]
@@ -16,19 +19,30 @@ namespace InternetShop.Controllers
     {
         private readonly InternetShopContext _internetShopContext;
 
+        /// <summary>
+        /// Подключает контроллер к контексту базы данных
+        /// </summary>
+        /// <param name="context">Контекст базы данных</param>
         public ManufacturerController(InternetShopContext context)
         {
             _internetShopContext = context;
         }
 
-        // GET: api/<ManufacturerController>
+        /// <summary>
+        /// Получение всех производителей из базы данных
+        /// </summary>
+        /// <returns>Список производителей</returns>
         [HttpGet]
         public async Task<ActionResult<List<Manufacturer>>> Get()
         {
             return await _internetShopContext.Manufacturers.ToListAsync();
         }
 
-        // GET api/<ManufacturerController>/5
+        /// <summary>
+        /// Получения конкретного производителя из базы данных
+        /// </summary>
+        /// <param name="id">Идентификатор производителя</param>
+        /// <returns>Производитель с данным id</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<Manufacturer>> Get(int id)
         {
@@ -40,7 +54,11 @@ namespace InternetShop.Controllers
             return Ok(manufacturer);
         }
 
-        // POST api/<ManufacturerController>
+        /// <summary>
+        /// Создание нового производителя в базе данных (только администратор)
+        /// </summary>
+        /// <param name="manuf">Новый производитель (без id)</param>
+        /// <returns>Новый производитель с заполненным id</returns>
         [HttpPost]
         [Authorize(Roles = "admin")]
         public async Task<ActionResult<Manufacturer>> Post([FromBody] Manufacturer manuf)
@@ -50,7 +68,11 @@ namespace InternetShop.Controllers
             return CreatedAtAction("Get", new { id = manuf.Id }, manuf);
         }
 
-        // PUT api/<ManufacturerController>/5
+        /// <summary>
+        /// Изменение производителя в базе данных (только администратор)
+        /// </summary>
+        /// <param name="manuf">Производитель с параметром id</param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         [Authorize(Roles = "admin")]
         public async Task<ActionResult<List<Manufacturer>>> Put([FromBody] Manufacturer manuf)
@@ -67,7 +89,12 @@ namespace InternetShop.Controllers
             return await Get();
         }
 
-        // DELETE api/<ManufacturerController>/5
+        /// <summary>
+        /// Удаление производителя из базы данных, включая
+        /// все связанные с ним товары (только администратор)
+        /// </summary>
+        /// <param name="id">id удаления</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int id)

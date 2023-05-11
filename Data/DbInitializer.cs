@@ -7,6 +7,12 @@ namespace InternetShop.Data
 {
     public static class DbInitializer
     {
+        /// <summary>
+        /// Инициализирует передаваемый котекст значениями по умолчанию при отсутствии в нём данных
+        /// (базовые сущности в справочниках категорий и производителей)
+        /// </summary>
+        /// <param name="context">Контекст базы данных</param>
+        /// <returns></returns>
         public static async Task Initialize(InternetShopContext context)
         {
             try

@@ -14,6 +14,9 @@ using System.Data;
 
 namespace InternetShop.Controllers
 {
+    /// <summary>
+    /// Контроллер для взаимодействия с товарами
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors]
@@ -21,12 +24,20 @@ namespace InternetShop.Controllers
     {
         private readonly InternetShopContext _internetShopContext;
 
+
+        /// <summary>
+        /// Подключает контроллер к контексту базы данных
+        /// </summary>
+        /// <param name="context">Контекст базы данных</param>
         public ProductController(InternetShopContext context)
         {
             _internetShopContext = context;
         }
 
-        // GET: api/<ProductController>
+        /// <summary>
+        /// Получение всех товаров из базы данных
+        /// </summary>
+        /// <returns>Список DTO товаров</returns>
         [HttpGet]
         public async Task<ActionResult<List<ProductDTO>>> Get()
         {
@@ -66,7 +77,11 @@ namespace InternetShop.Controllers
             return products;
         }
 
-        // GET api/<ProductController>/5
+        /// <summary>
+        /// Получения конкретного товара из базы данных
+        /// </summary>
+        /// <param name="id">Идентификатор товара</param>
+        /// <returns>DTO товара с данным id</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDTO>> Get([FromRoute] int id)
         {
@@ -124,7 +139,13 @@ namespace InternetShop.Controllers
             return Ok(productDTO);
         }
 
-        // POST api/<ProductController>
+        /// <summary>
+        /// Создание нового товара в базе данных (только администратор)
+        /// </summary>
+        /// <param name="prDTO">DTO нового товара (без id, разрешается без имён категории и производителя,
+        /// ссылки на изображение)</param>
+        /// <returns>DTO передаваемого товара с заполненными id,
+        /// categoryName, manufacturerName</returns>
         [HttpPost]
         [Authorize(Roles = "admin")]
         public async Task<ActionResult<Product>> Post([FromBody] ProductDTO prDTO)
@@ -173,7 +194,11 @@ namespace InternetShop.Controllers
             return CreatedAtAction("Get", new { id = prDTO.Id }, prDTO);
         }
 
-        // PUT api/<ProductController>/5
+        /// <summary>
+        /// Изменение товара в базе данных (только администратор)
+        /// </summary>
+        /// <param name="prDTO">DTO товара с параметром Id. Изменятся все поля</param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         [Authorize(Roles = "admin")]
         public async Task<ActionResult<List<ProductDTO>>> Put([FromBody] ProductDTO prDTO)
@@ -225,7 +250,11 @@ namespace InternetShop.Controllers
             return await Get();
         }
 
-        // DELETE api/<ProductController>/5
+        /// <summary>
+        /// Удаление товара из базы данных (только администратор)
+        /// </summary>
+        /// <param name="id">id удаления</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete([FromRoute] int id)

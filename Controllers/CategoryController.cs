@@ -10,6 +10,9 @@ using System.Data;
 
 namespace InternetShop.Controllers
 {
+    /// <summary>
+    /// Контроллер для взаимодействия с категориями
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors]
@@ -17,19 +20,30 @@ namespace InternetShop.Controllers
     {
         private readonly InternetShopContext _internetShopContext;
 
+        /// <summary>
+        /// Подключает контроллер к контексту базы данных
+        /// </summary>
+        /// <param name="context">Контекст базы данных</param>
         public CategoryController(InternetShopContext context)
         {
             _internetShopContext = context;
         }
 
-        // GET: api/<CategoryController>
+        /// <summary>
+        /// Получение всех категорий из базы данных
+        /// </summary>
+        /// <returns>Список категорий</returns>
         [HttpGet]
         public async Task<ActionResult<List<Category>>> Get()
         {
             return await _internetShopContext.Categories.ToListAsync();
         }
 
-        // GET api/<CategoryController>/5
+        /// <summary>
+        /// Получения конкретной категории из базы данных
+        /// </summary>
+        /// <param name="id">Идентификатор категории</param>
+        /// <returns>Категория с данным id</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> Get(int id)
         {
@@ -41,7 +55,11 @@ namespace InternetShop.Controllers
             return Ok(category);
         }
 
-        // POST api/<CategoryController>
+        /// <summary>
+        /// Создание новой категории в базе данных (только администратор)
+        /// </summary>
+        /// <param name="category">Новая категория (без id)</param>
+        /// <returns>Новая категория с заполненным id</returns>
         [HttpPost]
         [Authorize(Roles = "admin")]
         public async Task<ActionResult<Category>> Post([FromBody] Category category)
@@ -51,7 +69,11 @@ namespace InternetShop.Controllers
             return CreatedAtAction("Get", new { id = category.Id }, category);
         }
 
-        // PUT api/<CategoryController>/5
+        /// <summary>
+        /// Изменение категории в базе данных (только администратор)
+        /// </summary>
+        /// <param name="categ">Категория с параметром id</param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         [Authorize(Roles = "admin")]
         public async Task<ActionResult<List<Category>>> Put([FromBody] Category categ)
@@ -67,7 +89,12 @@ namespace InternetShop.Controllers
             return await Get();
         }
 
-        // DELETE api/<CategoryController>/5
+        /// <summary>
+        /// Удаление категории из базы данных, включая
+        /// все связанные с ней товары (только администратор)
+        /// </summary>
+        /// <param name="id">id удаления</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int id)

@@ -4,6 +4,11 @@ namespace InternetShop.Models
 {
     public static class IdentitySeed
     {
+        /// <summary>
+        /// Создаёт роли пользователя и администратора. Каждая роль заполнена одним объектом
+        /// </summary>
+        /// <param name="serviceProvider">Стандартный набор сервисов</param>
+        /// <returns></returns>
         public static async Task CreateUserRoles(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
