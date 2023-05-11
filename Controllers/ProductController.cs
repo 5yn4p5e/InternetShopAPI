@@ -39,7 +39,7 @@ namespace InternetShop.Controllers
                     CategoryId = pr.Category,
                     ManufacturerId = pr.Manufacturer,
                     Name = pr.Name,
-                    Price = Convert.ToString(pr.Price),
+                    Price = pr.Price,
                     Image = pr.Image
                 };
                 products.Add(prDTO);
@@ -70,10 +70,6 @@ namespace InternetShop.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDTO>> Get([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             ProductDTO productDTO = new();
             bool isExist = false;
             await foreach (var pr in _internetShopContext.Products)
@@ -86,7 +82,7 @@ namespace InternetShop.Controllers
                         CategoryId = pr.Category,
                         ManufacturerId = pr.Manufacturer,
                         Name = pr.Name,
-                        Price = Convert.ToString(pr.Price),
+                        Price = pr.Price,
                         Image = pr.Image
                     };
                     isExist = true;
@@ -130,18 +126,15 @@ namespace InternetShop.Controllers
 
         // POST api/<ProductController>
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<Product>> Post([FromBody] ProductDTO prDTO)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             Product pr = new()
             {
                 Category = prDTO.CategoryId,
                 Manufacturer = prDTO.ManufacturerId,
                 Name = prDTO.Name,
-                Price = Convert.ToInt32(prDTO.Price),
+                Price = prDTO.Price,
                 Image = prDTO.Image
             };
             bool isCorrect = false;
@@ -182,23 +175,19 @@ namespace InternetShop.Controllers
 
         // PUT api/<ProductController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] ProductDTO prDTO)
+        [Authorize(Roles = "admin")]
+        public async Task<ActionResult<List<ProductDTO>>> Put([FromBody] ProductDTO prDTO)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            var pr = await _internetShopContext.Products.FindAsync(id);
+            var pr = await _internetShopContext.Products.FindAsync(prDTO.Id);
             if (pr == null)
             {
                 return NotFound();
             }
 
-            pr.Id = id;
             pr.Category = prDTO.CategoryId;
             pr.Manufacturer = prDTO.ManufacturerId;
             pr.Name = prDTO.Name;
-            pr.Price = Convert.ToInt32(prDTO.Price);
+            pr.Price = prDTO.Price;
             pr.Image = prDTO.Image;
 
             bool isCorrect = false;
@@ -231,10 +220,9 @@ namespace InternetShop.Controllers
             {
                 return BadRequest(ModelState);
             }
-            prDTO.Id = id;
             _internetShopContext.Products.Update(pr);
             await _internetShopContext.SaveChangesAsync();
-            return NoContent();
+            return await Get();
         }
 
         // DELETE api/<ProductController>/5
@@ -242,10 +230,6 @@ namespace InternetShop.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             var prod = await _internetShopContext.Products.FindAsync(id);
             if (prod == null)
             {

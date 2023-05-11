@@ -1,7 +1,9 @@
 ﻿using InternetShop.InternetShopModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,7 +23,7 @@ namespace InternetShop.Controllers
 
         // GET: api/<ManufacturerController>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Manufacturer>>> Get()
+        public async Task<ActionResult<List<Manufacturer>>> Get()
         {
             return await _internetShopContext.Manufacturers.ToListAsync();
         }
@@ -30,10 +32,6 @@ namespace InternetShop.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Manufacturer>> Get(int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             var manufacturer = await _internetShopContext.Manufacturers.FindAsync(id);
             if (manufacturer == null)
             {
@@ -44,12 +42,9 @@ namespace InternetShop.Controllers
 
         // POST api/<ManufacturerController>
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<Manufacturer>> Post([FromBody] Manufacturer manuf)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             _internetShopContext.Manufacturers.Add(manuf);
             await _internetShopContext.SaveChangesAsync();
             return CreatedAtAction("Get", new { id = manuf.Id }, manuf);
@@ -57,14 +52,41 @@ namespace InternetShop.Controllers
 
         // PUT api/<ManufacturerController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [Authorize(Roles = "admin")]
+        public async Task<ActionResult<List<Manufacturer>>> Put([FromBody] Manufacturer manuf)
         {
+            var man = await _internetShopContext.Manufacturers.FindAsync(manuf.Id);
+            if (man == null)
+            {
+                return NotFound();
+            }
+            man.Name = manuf.Name;
+            man.Address = manuf.Address;
+            _internetShopContext.Manufacturers.Update(man);
+            await _internetShopContext.SaveChangesAsync();
+            return await Get();
         }
 
         // DELETE api/<ManufacturerController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Delete(int id)
         {
+            var manuf = await _internetShopContext.Manufacturers.FindAsync(id);
+            if (manuf == null)
+            {
+                return NotFound();
+            }
+            await foreach (var pr in _internetShopContext.Products)
+            {
+                if (pr.Manufacturer == id)
+                {
+                    _internetShopContext.Products.Remove(pr);
+                }
+            }
+            _internetShopContext.Manufacturers.Remove(manuf);
+            await _internetShopContext.SaveChangesAsync();
+            return Ok("Сущность успешно удалена");
         }
     }
 }
