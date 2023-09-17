@@ -1,14 +1,8 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using InternetShop.DTO;
 using InternetShop.InternetShopModels;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using InternetShop.DTO;
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
-using System.Collections.Generic;
-using static System.Net.Mime.MediaTypeNames;
 using Microsoft.AspNetCore.Authorization;
-using System.Data;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -43,7 +37,7 @@ namespace InternetShop.Controllers
         {
             List<ProductDTO> products = new();
             await foreach (var pr in _internetShopContext.Products)
-            {                
+            {
                 ProductDTO prDTO = new()
                 {
                     Id = pr.Id,

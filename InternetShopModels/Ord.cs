@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace InternetShop.InternetShopModels;
+﻿namespace InternetShop.InternetShopModels;
 
 public partial class Ord
 {

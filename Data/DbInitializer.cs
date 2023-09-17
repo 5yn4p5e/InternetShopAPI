@@ -1,7 +1,4 @@
 ﻿using InternetShop.InternetShopModels;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace InternetShop.Data
 {
