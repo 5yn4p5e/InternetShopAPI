@@ -27,7 +27,7 @@ namespace InternetShop.Models
             string adminPassword = "Ab123)";
             if (await userManager.FindByNameAsync(adminEmail) == null)
             {
-                User admin = new User { Email = adminEmail, UserName = adminEmail };
+                User admin = new() { Email = adminEmail, UserName = adminEmail };
                 IdentityResult result = await userManager.CreateAsync(admin, adminPassword);
                 if (result.Succeeded)
                 {
@@ -39,7 +39,7 @@ namespace InternetShop.Models
             string userPassword = "Aa123456!";
             if (await userManager.FindByNameAsync(userEmail) == null)
             {
-                User user = new User { Email = userEmail, UserName = userEmail };
+                User user = new() { Email = userEmail, UserName = userEmail };
                 IdentityResult result = await userManager.CreateAsync(user, userPassword);
                 if (result.Succeeded)
                 {

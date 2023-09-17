@@ -27,7 +27,7 @@ public partial class InternetShopContext : IdentityDbContext<User>
     public virtual DbSet<ProductOrd> ProductOrds { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=OLEG\\SQLEXPRESS;Database=InternetShop;Trusted_Connection=True;Encrypt=False;");
+        => optionsBuilder.UseSqlServer("Server=5YNAP5E\\SQLEXPRESS;Database=InternetShop;Trusted_Connection=True;Encrypt=False;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
